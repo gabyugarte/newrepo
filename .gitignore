@@ -13,6 +13,10 @@ node_modules
 .env
 
 # .DS_Store is only for Mac users
+<<<<<<< HEAD
 **/.DS_Store
 
 README.md  
+=======
+**/.DS_Store
+>>>>>>> e0f2ac4b7bf2c161aadde96399763e5e1b4b7d8f
