@@ -1,15 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-    <%- include('../partials/head') %>
-    <body>
-        <div id="wrapper">
-            <%- include('../partials/header') %>
-            <%- include('../partials/navigation') %>
 
-            <main>
-                <%- body %>
-            </main>
-            <%- include('../partials/footer') %>
-        </div>
-    </body>
+<!doctype html>
+<html lang="en">
+  <%- include('../partials/head.ejs') %>
+  <body>
+    <div class="page-wrap">
+      <%- include('../partials/header.ejs') %>
+      <%- include('../partials/navigation.ejs') %>
+
+      <!-- Aquí se inserta el contenido específico de cada vista -->
+      <main id="main" role="main" class="container">
+        <%- body %>
+      </main>
+
+      <%- include('../partials/footer.ejs') %>
+    </div>
+  </body>
 </html>
