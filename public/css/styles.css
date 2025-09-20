@@ -66,21 +66,16 @@ html, body {
 }
 
 /* Nav (dentro de page-wrap, no viewport) */
-nav {
-  width: 100%;                /* 100% del contenedor .page-wrap */
-  margin: 10px 0 18px;
-  background: #222431;        /* Mantiene el color de fondo */
-  position: static;           /* Sin desplazamientos forzados por vw */
-}
+/* Nav */
 
 .main-nav {
   list-style: none;
   display: flex;
   gap: 10px;
-  overflow-x: auto;
-  padding-bottom: 6px;
-  margin: 0;
-  width: 100%;                /* igual, máximo dentro del nav */
+  padding: 10px;
+  margin: 10px 0 18px;
+  width: 100%;
+  background: #222431; /* fondo negro en toda la barra */
 }
 
 .main-nav li {
@@ -88,14 +83,13 @@ nav {
 }
 
 .main-nav a {
-  display: inline-block;
-  padding: 8px 12px;
   text-decoration: none;
-  color: #ffffff;
-  background: #222431;
-  border-radius: 4px;
+  color: #ffffff;       /* texto blanco */
   font-weight: 600;
+  padding: 8px 12px;    /* espacio clickable */
+  background: none;     /*quitamos el fondo negro aquí */
 }
+
 
 
 
@@ -119,6 +113,64 @@ nav {
   margin-bottom: 18px;
   position: relative; /* Para control de solapamientos */
 }
+
+/* Inventory Grid */
+#inv-display {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+#inv-display li {
+  background: #fff;
+  border: 2px solid #00a3b5;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#inv-display li:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+#inv-display img {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+#inv-display h2 {
+  font-size: 1.1rem;
+  margin: 8px 0 4px;
+}
+
+#inv-display h2 a {
+  color: #0b1220;
+  text-decoration: none;
+}
+
+#inv-display h2 a:hover {
+  color: #00a3b5;
+  text-decoration: underline;
+}
+
+#inv-display .namePrice {
+  margin-top: 8px;
+}
+
+#inv-display .namePrice span {
+  display: block;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #005662;
+}
+
 
 @media (min-width: 900px) {
   .hero {

@@ -1,0 +1,31 @@
+<%- include("../partials/header") %>
+
+<main class="page-wrap">
+
+  <!-- ***********************
+       Content Heading
+       Shows the title dynamically if available,
+       otherwise redirects to home
+  *************************** -->
+
+  <% if (title) { %>
+    <h1><%= title %></h1>
+  <% } else { %>
+    <% res.redirect('/') %>
+  <% } %>
+
+  <!-- ***********************
+       Message Block
+       (commented for now, will be enabled later)
+  *************************** -->
+  <%# messages() %>
+  
+  <!-- ***********************
+       Inventory Items Display
+       Shows the vehicle grid built in utilities
+  *************************** -->
+  <%- grid %>
+
+</main>
+
+<%- include("../partials/footer") %>
