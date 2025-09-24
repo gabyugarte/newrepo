@@ -1,0 +1,52 @@
+
+
+<main class="form-page">
+  <h1><%= title %></h1>
+
+  <!-- Flash message (si existe) -->
+  <% if (typeof messages !== "undefined" && messages.length > 0) { %>
+    <div class="flash-message">
+      <% messages.forEach(msg => { %>
+        <p><%= msg %></p>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <!-- Registration Form -->
+  <form action="/account/register" method="post" class="register-form">
+    <label for="account_firstname">First Name:</label>
+    <input type="text" id="account_firstname" name="account_firstname" required>
+
+    <label for="account_lastname">Last Name:</label>
+    <input type="text" id="account_lastname" name="account_lastname" required>
+
+    <label for="account_email">Email:</label>
+    <input type="email" id="account_email" name="account_email" required>
+
+    <label for="account_password">Password:</label>
+    <input 
+      type="password" 
+      id="account_password" 
+      name="account_password" 
+      required
+      minlength="12"
+      placeholder="At least 12 chars, 1 uppercase, 1 number, 1 special character"
+    >
+
+    <!-- Optional password toggle -->
+    <div class="password-toggle">
+      <input type="checkbox" id="showPassword" onclick="togglePassword()"> 
+      <label for="showPassword">Show Password</label>
+    </div>
+
+    <button type="submit">Register</button>
+  </form>
+</main>
+
+<script>
+  function togglePassword() {
+    const pwd = document.getElementById("account_password")
+    pwd.type = pwd.type === "password" ? "text" : "password"
+  }
+</script>
+

@@ -12,4 +12,13 @@ router.get(
   utilities.handleErrors(accountController.buildLogin)
 )
 
+/* ***************************
+ *  GET Registration view
+ * ************************** */
+router.get(
+  "/register",
+  utilities.handleErrors(accountController.buildRegister)
+)
+
+
 module.exports = router
