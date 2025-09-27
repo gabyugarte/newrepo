@@ -3,34 +3,69 @@
 <main class="form-page">
   <h1><%= title %></h1>
 
-  <!-- Flash message (si existe) -->
-  <% if (typeof messages !== "undefined" && messages.length > 0) { %>
-    <div class="flash-message">
-      <% messages.forEach(msg => { %>
-        <p><%= msg %></p>
+<!-- Flash messages (connect-flash) -->
+<% if (messages.notice && messages.notice.length > 0) { %>
+  <div class="flash-message notice">
+    <% messages.notice.forEach(msg => { %>
+      <p><%= msg %></p>
+    <% }) %>
+  </div>
+<% } %>
+
+<% if (messages.error && messages.error.length > 0) { %>
+  <div class="flash-message error">
+    <% messages.error.forEach(msg => { %>
+      <p><%= msg %></p>
+    <% }) %>
+  </div>
+<% } %>
+
+  <!-- Validation errors -->
+  <% if (errors && errors.length > 0) { %>
+    <ul class="validation-errors">
+      <% errors.forEach(error => { %>
+        <li><%= error.msg %></li>
       <% }) %>
-    </div>
+    </ul>
   <% } %>
 
   <!-- Registration Form -->
-  <form action="/account/register" method="post" class="register-form">
+ <form action="/account/register" method="post" class="register-form">
     <label for="account_firstname">First Name:</label>
-    <input type="text" id="account_firstname" name="account_firstname" required>
+    <input 
+      type="text" 
+      id="account_firstname" 
+      name="account_firstname" 
+      value="<%= typeof account_firstname !== 'undefined' ? account_firstname : '' %>" 
+      required
+    >
 
     <label for="account_lastname">Last Name:</label>
-    <input type="text" id="account_lastname" name="account_lastname" required>
+    <input 
+      type="text" 
+      id="account_lastname" 
+      name="account_lastname" 
+      value="<%= typeof account_lastname !== 'undefined' ? account_lastname : '' %>" 
+      required
+    >
 
     <label for="account_email">Email:</label>
-    <input type="email" id="account_email" name="account_email" required>
+    <input 
+      type="email" 
+      id="account_email" 
+      name="account_email" 
+      value="<%= typeof account_email !== 'undefined' ? account_email : '' %>" 
+      required
+    >
 
-    <label for="account_password">Password:</label>
+    <label for="account_password">Password:</label> 
+    <span>Passwords must be at least 12 characters and contain at least 1 number, 1 capital letter and 1 special character</span> 
     <input 
       type="password" 
-      id="account_password" 
       name="account_password" 
-      required
-      minlength="12"
-      placeholder="At least 12 chars, 1 uppercase, 1 number, 1 special character"
+      id="account_password" 
+      required 
+      pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$"
     >
 
     <!-- Optional password toggle -->

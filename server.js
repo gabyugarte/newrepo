@@ -49,11 +49,18 @@ app.use(session({
 
 
 // Express Messages Middleware
-app.use(require('connect-flash')())
-app.use(function(req, res, next){
-  res.locals.messages = require('express-messages')(req, res)
+// app.use(require('connect-flash')())
+// app.use(function(req, res, next){
+//   res.locals.messages = require('express-messages')(req, res)
+//   next()
+// })
+
+// Flash messages middleware (EJS compatible)
+app.use(function (req, res, next) {
+  res.locals.messages = req.flash()
   next()
 })
+
 
 /* ***********************
  * Routes

@@ -597,6 +597,19 @@ a:focus, button:focus {
   box-shadow: none; 
 }
 
+input:required:invalid,
+input:focus:invalid {
+  border: 2px solid #e63946; 
+  background-color: #fff5f5;  
+  outline: none;
+}
+
+
+input:required:valid {
+  border: 2px solid #2a9d8f;
+  background-color: #f0fff9; 
+}
+
 
 
 /* Large screens — desktop layout */
