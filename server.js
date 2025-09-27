@@ -17,6 +17,9 @@ const utilities = require("./utilities/")
 const session = require("express-session")
 const pool = require('./database/')
 const accountRoute = require("./routes/accountRoute")
+const flash = require("connect-flash")
+const invRoute = require("./routes/inventoryRoute")
+app.use("/inv", invRoute)
 
 
 
@@ -49,11 +52,11 @@ app.use(session({
 
 
 // Express Messages Middleware
-// app.use(require('connect-flash')())
-// app.use(function(req, res, next){
-//   res.locals.messages = require('express-messages')(req, res)
-//   next()
-// })
+app.use(require('connect-flash')())
+app.use(function(req, res, next){
+  res.locals.messages = require('express-messages')(req, res)
+  next()
+})
 
 // Flash messages middleware (EJS compatible)
 app.use(function (req, res, next) {

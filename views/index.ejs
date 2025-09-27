@@ -1,7 +1,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <h1 class="welcome">Welcome to CSE Motors!</h1>
-<%- messages() %>
+
+<!-- Flash messages (connect-flash) -->
+<% if (messages && messages.notice && messages.notice.length > 0) { %>
+  <div class="flash-message notice">
+    <% messages.notice.forEach(msg => { %>
+      <p><%= msg %></p>
+    <% }) %>
+  </div>
+<% } %>
+
+<% if (messages && messages.error && messages.error.length > 0) { %>
+  <div class="flash-message error">
+    <% messages.error.forEach(msg => { %>
+      <p><%= msg %></p>
+    <% }) %>
+  </div>
+<% } %>
+
 <section class="hero">
   <div class="hero-left">
     <h2 class="model-title">
@@ -17,14 +34,11 @@
 
   <div class="hero-right">
     <img src="/images/vehicles/delorean.jpg" alt="DMC Delorean car">
-    </div>
+  </div>
 </section>
 
-
-
 <section class="reviews-upgrades">
-
-      <div class="upgrades">
+  <div class="upgrades">
     <h2>Delorean Upgrades</h2>
     <div class="upgrade-grid">
       <a class="upgrade" href="/upgrades/flux-capacitor">
@@ -55,6 +69,4 @@
       <li>"80's livin and I love it!" (5/5)</li>
     </ul>
   </div>
-
-
 </section>

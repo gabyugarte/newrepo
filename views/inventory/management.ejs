@@ -1,0 +1,21 @@
+<%- include('../partials/header') %>
+
+<main>
+  <h1>Inventory Management</h1>
+
+  <!-- Mostrar mensajes flash -->
+  <% if (messages && messages.length > 0) { %>
+    <div class="flash-message">
+      <% messages.forEach(msg => { %>
+        <p><%= msg %></p>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <ul>
+    <li><a href="/inv/add-classification">Add New Classification</a></li>
+    <li><a href="/inv/add-inventory">Add New Inventory</a></li>
+  </ul>
+</main>
+
+<%- include('../partials/footer') %>

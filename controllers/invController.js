@@ -57,7 +57,18 @@ invCont.causeError = async function (req, res, next) {
     next(err)
   }
 }
+/* ***************************
+ * Build inventory management view
+ * ************************** */
+async function buildManagement(req, res, next) {
+  let nav = await utilities.getNav()
+  res.render("inventory/management", {
+    title: "Inventory Management",
+    nav,
+    errors: null,
+    messages: req.flash("notice"), // recibe mensajes flash
+  })
+}
 
-
-
- module.exports = invCont
+module.exports = { invCont, buildManagement }
+//  module.exports = invCont
