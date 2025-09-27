@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head', {title: title}) %>
+    <!-- Enlaza el CSS específico de formularios -->
+    <link rel="stylesheet" href="/css/styles.css">
+    <!-- Debug del Nav -->
+
+<!-- <div class="debug-nav">
+    <h3>DEBUG - Nav HTML:</h3>
+    <pre><%= nav %></pre>
+</div> -->
+</head>
+<body>
+    
+    <main class="form-container">
+        <h1>Add New Classification</h1>
+
+        <!-- Flash Messages -->
+        <% if (flashMessage) { %>
+            <div class="flash-message notice">
+                <p><%= flashMessage %></p>
+            </div>
+        <% } %>
+
+        <% if (errors && errors.length > 0) { %>
+            <div class="flash-message error">
+                <% errors.forEach(error => { %>
+                    <p><%= error.msg || error %></p>
+                <% }) %>
+            </div>
+        <% } %>
+
+        <form action="/inv/add-classification" method="post" class="classification-form">
+            <div class="form-group">
+                <label for="classification_name">Classification Name *</label>
+                <input 
+                    type="text" 
+                    id="classification_name" 
+                    name="classification_name" 
+                    required 
+                    pattern="[a-zA-Z0-9]+" 
+                    title="No spaces or special characters allowed"
+                    value="<%= classification_name || '' %>"
+                    minlength="2"
+                    maxlength="30"
+                >
+                <p class="form-note">Must contain only letters and numbers (no spaces or special characters). Minimum 2 characters.</p>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn-primary">Add Classification</button>
+            </div>
+        </form>
+         <br>
+    <a href="/inv">Back to Management</a>
+    </main>
+
+    <!-- Enlaza el JS de validación -->
+    <script src="/public/js/form-validation.js"></script>
+</body>
+</html>

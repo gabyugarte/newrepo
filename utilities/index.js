@@ -1,32 +1,77 @@
 const invModel = require("../models/inventory-model")
 const Util = {}
 
+
 /* ************************
- * Constructs the nav HTML unordered list
+ * Constructs the nav HTML unordered list 
  ************************** */
 Util.getNav = async function () {
   try {
     const data = await invModel.getClassifications()
+    console.log("getNav - datos recibidos:", data) // Debug
 
-    let list = '<ul class="main-nav">'
+    let list = '<nav><ul class="main-nav">'
     list += '<li><a href="/" title="Home page">Home</a></li>'
-    data.rows.forEach((row) => {
-      list += "<li>"
-      list +=
-        '<a href="/inv/type/' +
-        row.classification_id +
-        '" title="See our inventory of ' +
-        row.classification_name +
-        ' vehicles">' +
-        row.classification_name +
-        "</a>"
-      list += "</li>"
-    })
-    list += "</ul>"
+    
+  
+    if (data && Array.isArray(data)) {
+      data.forEach((row) => {
+        list += "<li>"
+        list +=
+          '<a href="/inv/type/' +
+          row.classification_id +
+          '" title="See our inventory of ' +
+          row.classification_name +
+          ' vehicles">' +
+          row.classification_name +
+          "</a>"
+        list += "</li>"
+      })
+    } else {
+      console.log("getNav - datos no son array:", data)
+    }
+    
+    list += "</ul></nav>"
     return list
+    
   } catch (err) {
     console.error("ERROR in getNav:", err)
-    return '<ul><li><a href="/">Home</a></li></ul>'
+    return '<nav><ul class="main-nav"><li><a href="/">Home</a></li></ul></nav>'
+  }
+}
+
+/* ***************************
+ * Build classification select list - AÑADE ESTA FUNCIÓN
+ * ************************** */
+Util.buildClassificationList = async function (classification_id = null) {
+  try {
+    const data = await invModel.getClassifications()
+    console.log("buildClassificationList - datos recibidos:", data)
+    
+    let classificationList = '<select name="classification_id" id="classificationList" required>'
+    classificationList += "<option value=''>Choose a Classification</option>"
+    
+    if (data && Array.isArray(data)) {
+      data.forEach((row) => {
+        classificationList += '<option value="' + row.classification_id + '"'
+        if (classification_id != null && row.classification_id == classification_id) {
+          classificationList += " selected"
+        }
+        classificationList += ">" + row.classification_name + "</option>"
+      })
+    } else {
+      console.log("buildClassificationList - datos no son array:", data)
+      // Fallback si no hay datos
+      classificationList += "<option value=''>No classifications available</option>"
+    }
+    
+    classificationList += "</select>"
+    return classificationList
+    
+  } catch (error) {
+    console.error("Error building classification list:", error)
+    // Fallback en caso de error
+    return '<select name="classification_id" id="classificationList" required><option value="">Error loading classifications</option></select>'
   }
 }
 

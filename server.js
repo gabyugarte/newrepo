@@ -18,8 +18,7 @@ const session = require("express-session")
 const pool = require('./database/')
 const accountRoute = require("./routes/accountRoute")
 const flash = require("connect-flash")
-const invRoute = require("./routes/inventoryRoute")
-app.use("/inv", invRoute)
+
 
 
 
