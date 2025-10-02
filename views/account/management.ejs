@@ -1,0 +1,33 @@
+
+
+<main>
+  <h1>Account Management</h1>
+
+  <!-- Flash messages -->
+  <% if (messages && messages.length > 0) { %>
+    <div class="flash-message">
+      <% messages.forEach(msg => { %>
+        <p><%= msg %></p>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <!-- Validation errors -->
+  <% if (errors && errors.length > 0) { %>
+    <ul class="validation-errors">
+      <% errors.forEach(error => { %>
+        <li><%= error.msg %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+
+   <!-- Welcome message -->
+  <p>Welcome, <%= account_firstname || "User" %> 👋</p>
+
+
+  <p>You're logged in.</p>
+   <!-- Edit account button -->
+  <a href="/account/edit" class="btn">Edit Account Information</a>
+</main>
+
+

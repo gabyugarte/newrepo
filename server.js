@@ -18,6 +18,8 @@ const session = require("express-session")
 const pool = require('./database/')
 const accountRoute = require("./routes/accountRoute")
 const flash = require("connect-flash")
+const cookieParser = require("cookie-parser")
+
 
 
 
@@ -62,6 +64,9 @@ app.use(function (req, res, next) {
   res.locals.messages = req.flash()
   next()
 })
+
+app.use(cookieParser())
+app.use(utilities.checkJWTToken)
 
 
 /* ***********************

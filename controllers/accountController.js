@@ -1,6 +1,10 @@
 const utilities = require("../utilities/")
 const accountModel = require("../models/account-model")
+console.log("DEBUG -> accountModel:", accountModel)
 const bcrypt = require("bcryptjs")
+const jwt = require("jsonwebtoken")
+require("dotenv").config()
+
 
 
 /* ****************************************
@@ -78,6 +82,95 @@ async function registerAccount(req, res) {
   }
 }
 
-module.exports = { buildLogin, buildRegister, registerAccount }
+/* ****************************************
+ *  Process login request
+ * ************************************ */
+async function accountLogin(req, res) {
+  let nav = await utilities.getNav()
+  const { account_email, account_password } = req.body
+
+  try {
+    const accountData = await accountModel.getAccountByEmail(account_email)
+    if (!accountData) {
+      req.flash("notice", "Please check your credentials and try again.")
+      return res.status(400).render("account/login", {
+        title: "Login",
+        nav,
+        errors: null,
+        account_email,
+      })
+    }
+
+    // 🔑 Comparar contraseñas
+    const match = await bcrypt.compare(account_password, accountData.account_password)
+    if (!match) {
+      req.flash("notice", "Please check your credentials and try again.")
+      return res.status(400).render("account/login", {
+        title: "Login",
+        nav,
+        errors: null,
+        account_email,
+      })
+    }
+
+    delete accountData.account_password
+
+ 
+    const accessToken = jwt.sign(
+      accountData,
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "1h" }   // OJO: no milisegundos
+    )
+
+    // Guardar cookie
+    if (process.env.NODE_ENV === "development") {
+      res.cookie("jwt", accessToken, { httpOnly: true, maxAge: 3600 * 1000 })
+    } else {
+      res.cookie("jwt", accessToken, { httpOnly: true, secure: true, maxAge: 3600 * 1000 })
+    }
+
+    return res.redirect("/account/")
+  } catch (error) {
+    console.error("❌ ERROR EN LOGIN:", error)
+    req.flash("notice", "Sorry, login failed.")
+    res.status(500).render("account/login", {
+      title: "Login",
+      nav,
+      errors: null,
+      account_email,
+    })
+  }
+}
+
+
+
+
+/* ****************************************
+ *  Deliver account management view
+ * ************************************ */
+
+const capitalize = (str) => {
+  if (!str) return ""
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+}
+async function buildAccountManagement(req, res) {
+  let nav = await utilities.getNav()
+  const accountData = res.locals.accountData || {} 
+
+  console.log("DEBUG -> accountData en buildAccountManagement:", accountData)
+
+  res.render("account/management", {
+    title: "Account Management",
+    nav,
+    errors: null,
+    messages: req.flash("notice"),
+    account_firstname: capitalize(accountData.account_firstname) || "User"
+  })
+}
+
+
+
+
+module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildAccountManagement }
 
 
