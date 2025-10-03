@@ -1,3 +1,4 @@
+const { body, validationResult } = require("express-validator")
 const utilities = require("./")
 const invModel = require("../models/inventory-model")
 
@@ -67,5 +68,89 @@ inventoryVal.checkInventoryData = async (req, res, next) => {
 
   next()
 }
+
+/* ***************************
+ * Check data and return errors for Update Inventory
+ * ************************** */
+inventoryVal.checkUpdateData = async (req, res, next) => {
+  const {
+    inv_make,
+    inv_model,
+    inv_year,
+    inv_description,
+    inv_image,
+    inv_thumbnail,
+    inv_price,
+    inv_miles,
+    inv_color,
+    classification_id,
+    inv_id
+  } = req.body
+
+  let errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    let nav = await utilities.getNav()
+    const classificationSelect = await utilities.buildClassificationList(classification_id)
+    const itemName = `${inv_make} ${inv_model}`
+
+    return res.render("./inventory/edit-inventory", {
+      errors,
+      title: "Edit " + itemName,
+      nav,
+      classificationSelect,
+      inv_id,
+      inv_make,
+      inv_model,
+      inv_year,
+      inv_description,
+      inv_image,
+      inv_thumbnail,
+      inv_price,
+      inv_miles,
+      inv_color,
+      classification_id
+    })
+  }
+  next()
+}
+
+/* ***************************
+ * Validation Rules for New Inventory
+ * ************************** */
+inventoryVal.newInventoryRules = () => {
+  return [
+    body("inv_make")
+      .trim()
+      .isLength({ min: 3 })
+      .withMessage("Make must be at least 3 characters long."),
+
+    body("inv_model")
+      .trim()
+      .isLength({ min: 3 })
+      .withMessage("Model must be at least 3 characters long."),
+
+    body("inv_year")
+      .isInt({ min: 1900, max: new Date().getFullYear() + 1 })
+      .withMessage("Enter a valid year."),
+
+    body("inv_price")
+      .isFloat({ min: 0 })
+      .withMessage("Price must be a positive number."),
+
+    body("inv_miles")
+      .isInt({ min: 0 })
+      .withMessage("Miles must be a positive number."),
+
+    body("inv_color")
+      .trim()
+      .notEmpty()
+      .withMessage("Color is required."),
+
+    body("classification_id")
+      .notEmpty()
+      .withMessage("Classification is required."),
+  ]
+}
+
 
 module.exports = inventoryVal

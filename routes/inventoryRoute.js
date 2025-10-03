@@ -3,6 +3,8 @@ const express = require("express");
 const router = express.Router();  // <-- Cambia "new express.Router()" por esto
 const invController = require("../controllers/invController");
 const utilities = require("../utilities");
+const invValidate = require("../utilities/inventory-validation")
+
 
 // IMPORTANTE: Importa los middlewares de validación SOLO si los archivos existen
 let classificationVal, inventoryVal;
@@ -47,5 +49,21 @@ router.post(
   inventoryVal.checkInventoryData,
   utilities.handleErrors(invController.addInventory)
 );
+router.get(
+  "/getInventory/:classification_id",
+  utilities.handleErrors(invController.getInventoryJSON)
+)
+// Route to edit inventory item
+router.get("/edit/:inv_id", utilities.handleErrors(invController.editInventoryView))
+router.post("/update", utilities.handleErrors(invController.updateInventory))
+
+// Update Inventory Route
+router.post(
+  "/update",
+  invValidate.newInventoryRules(),
+  invValidate.checkUpdateData,
+  utilities.handleErrors(invController.updateInventory)
+)
+
 
 module.exports = router;

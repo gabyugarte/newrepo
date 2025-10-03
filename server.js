@@ -53,13 +53,14 @@ app.use(session({
 
 
 // Express Messages Middleware
-app.use(require('connect-flash')())
-app.use(function(req, res, next){
-  res.locals.messages = require('express-messages')(req, res)
-  next()
-})
+// app.use(require('connect-flash')())
+// app.use(function(req, res, next){
+//   res.locals.messages = require('express-messages')(req, res)
+//   next()
+// })
 
 // Flash messages middleware (EJS compatible)
+app.use(flash())
 app.use(function (req, res, next) {
   res.locals.messages = req.flash()
   next()
@@ -116,3 +117,7 @@ const host = process.env.HOST
 app.listen(port, () => {
   console.log(`app listening on ${host}:${port}`)
 })
+
+
+const invRoute = require("./routes/inventoryRoute")
+app.use("/inv", invRoute)

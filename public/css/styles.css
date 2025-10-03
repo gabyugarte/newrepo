@@ -276,6 +276,25 @@ body .page-wrap > nav ul.main-nav a:hover {
     background: #34495e !important;
 }
 
+#inventoryDisplay {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+#inventoryDisplay th,
+#inventoryDisplay td {
+  border: 1px solid #ddd;
+  padding: 0.5rem 1rem;
+  text-align: left;
+}
+
+#inventoryDisplay th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+
 @media (max-width: 600px) {
   .main-nav a {
     padding: 6px 8px;

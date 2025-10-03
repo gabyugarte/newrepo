@@ -90,11 +90,13 @@ invCont.causeError = async function (req, res, next) {
 invCont.buildManagement = async function (req, res, next) {
   try {
     let nav = await utilities.getNav();
+    const classificationSelect = await utilities.buildClassificationList()
     res.render("inventory/management", {
       title: "Inventory Management",
       nav,
       errors: null,
       flashMessage: req.flash("notice") || null,
+      classificationSelect, 
     });
   } catch (error) {
     next(error);
@@ -290,5 +292,134 @@ invCont.addInventory = async function (req, res, next) {
     next(error)
   }
 }
+
+
+/* ***************************
+ *  Return Inventory by Classification As JSON
+ * ************************** */
+invCont.getInventoryJSON = async (req, res, next) => {
+  try {
+    const classification_id = parseInt(req.params.classification_id)
+    const invData = await invModel.getInventoryByClassificationId(classification_id)
+    const inv_id = parseInt(req.body.inv_id)
+    if (invData && invData.length > 0) {
+      return res.json(invData)
+    } else {
+      next(new Error("No data returned"))
+    }
+  } catch (error) {
+    next(error)
+  }
+}
+
+/* ***************************
+ *  Build edit inventory view
+ * ************************** */
+invCont.editInventoryView = async function (req, res, next) {
+  try {
+    // 1. Obtener el id desde la URL
+    const inv_id = parseInt(req.params.inv_id)
+
+    // 2. Construir la barra de navegación
+    let nav = await utilities.getNav()
+
+    // 3. Traer la data del vehículo desde el modelo
+    // const itemData = await invModel.getInventoryById(inv_id)
+    const vehicle = await invModel.getInventoryById(inv_id)
+
+    // 4. Construir la lista de clasificaciones (marcar seleccionada la actual)
+    const classificationSelect = await utilities.buildClassificationList(vehicle.classification_id)
+
+    // 5. Nombre amigable del vehículo (Make + Model)
+    const itemName = `${vehicle.inv_make} ${vehicle.inv_model}`
+
+    // 6. Renderizar la vista edit-inventory con los datos precargados
+    res.render("./inventory/edit-inventory", {
+      title: "Edit " + itemName,
+      nav,
+      classificationList: classificationSelect,
+      errors: null,
+      flashMessage: null,
+      inv_id: vehicle.inv_id,
+      inv_make: vehicle.inv_make,
+      inv_model: vehicle.inv_model,
+      inv_year: vehicle.inv_year,
+      inv_description: vehicle.inv_description,
+      inv_image: vehicle.inv_image,
+      inv_thumbnail: vehicle.inv_thumbnail,
+      inv_price: vehicle.inv_price,
+      inv_miles: vehicle.inv_miles,
+      inv_color: vehicle.inv_color,
+      classification_id: vehicle.classification_id
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+/* ***************************
+ *  Update Inventory Data
+ * ************************** */
+invCont.updateInventory = async function (req, res, next) {
+  let nav = await utilities.getNav()
+  const {
+    inv_id,
+    inv_make,
+    inv_model,
+    inv_description,
+    inv_image,
+    inv_thumbnail,
+    inv_price,
+    inv_year,
+    inv_miles,
+    inv_color,
+    classification_id,
+  } = req.body
+
+  const updateResult = await invModel.updateInventory(
+    inv_id,  
+    inv_make,
+    inv_model,
+    inv_description,
+    inv_image,
+    inv_thumbnail,
+    inv_price,
+    inv_year,
+    inv_miles,
+    inv_color,
+    classification_id
+  )
+
+  if (updateResult) {
+    const itemName = updateResult.inv_make + " " + updateResult.inv_model
+    req.flash("notice", `The ${itemName} was successfully updated.`)
+    res.redirect("/inv/")
+  } else {
+    const classificationSelect = await utilities.buildClassificationList(classification_id)
+    const itemName = `${inv_make} ${inv_model}`
+    req.flash("notice", "Sorry, the update failed.")
+    res.status(501).render("inventory/edit-inventory", {
+      title: "Edit " + itemName,
+      nav,
+      classificationSelect: classificationSelect,
+      errors: null,
+      inv_id,
+      inv_make,
+      inv_model,
+      inv_year,
+      inv_description,
+      inv_image,
+      inv_thumbnail,
+      inv_price,
+      inv_miles,
+      inv_color,
+      classification_id
+    })
+  }
+}
+
+
+
+
 
 module.exports = invCont;

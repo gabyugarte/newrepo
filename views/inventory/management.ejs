@@ -1,45 +1,44 @@
-
-
-<!-- <main>
+<main class="management-container">
   <h1>Inventory Management</h1>
 
-  <% if (messages && messages.length > 0) { %>
+  <!-- flash  -->
+  <% if (flashMessage) { %>
     <div class="flash-message">
-      <% messages.forEach(msg => { %>
-        <p><%= msg %></p>
-      <% }) %>
+      <p><%- flashMessage %></p>
     </div>
   <% } %>
 
-  <ul>
-    <li><a href="/inv/add-classification">Add New Classification</a></li>
-    <li><a href="/inv/add-inventory">Add New Inventory</a></li>
-  </ul>
-</main> -->
+  <div class="management-options">
+    <div class="management-card">
+      <h2>Classification Management</h2>
+      <a href="/inv/add-classification" class="btn-primary">
+        Add New Classification
+      </a>
+    </div>
+    
+    <div class="management-card">
+      <h2>Inventory Management</h2>
+      <a href="/inv/add-inventory" class="btn-primary">
+        Add New Inventory Item
+      </a>
+    </div>
+  </div>
 
-   <main class="management-container">
-        <h1>Inventory Management</h1>
+  <section>
+    <h2>Manage Inventory</h2>
+    <p>Select a classification from the list to see its inventory items.</p>
 
-        <!-- flash  -->
-        <% if (flashMessage) { %>
-            <div class="flash-message">
-                <p><%= flashMessage %></p>
-            </div>
-        <% } %>
+    <form>
+      <label for="classificationSelect">Classification:</label>
+     <%- classificationSelect %>
+    </form>
 
-        <div class="management-options">
-            <div class="management-card">
-                <h2>Classification Management</h2>
-                <a href="/inv/add-classification" class="btn-primary">
-                    Add New Classification
-                </a>
-            </div>
-            
-            <div class="management-card">
-                <h2>Inventory Management</h2>
-                <a href="/inv/add-inventory" class="btn-primary">
-                    Add New Inventory Item
-                </a>
-            </div>
-        </div>
-    </main>
+
+    <table id="inventoryDisplay"></table>
+
+    <noscript>JavaScript must be enabled to use this page.</noscript>
+  </section>
+
+  <script src="/js/inventory.js"></script>
+
+</main>
