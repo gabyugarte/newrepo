@@ -1,12 +1,14 @@
 <main class="management-container">
   <h1>Inventory Management</h1>
+  
 
   <!-- flash  -->
-  <% if (flashMessage) { %>
-    <div class="flash-message">
-      <p><%- flashMessage %></p>
-    </div>
-  <% } %>
+<% if (flashMessage && flashMessage.length > 0) { %>
+  <div class="flash-message">
+    <p><%= flashMessage[0] %></p>
+  </div>
+<% } %>
+
 
   <div class="management-options">
     <div class="management-card">

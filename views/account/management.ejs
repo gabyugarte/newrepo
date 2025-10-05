@@ -1,5 +1,3 @@
-
-
 <main>
   <h1>Account Management</h1>
 
@@ -21,13 +19,20 @@
     </ul>
   <% } %>
 
-   <!-- Welcome message -->
-  <p>Welcome, <%= account_firstname || "User" %> 👋</p>
+  <!-- Welcome message -->
+  <h2>Welcome <%= accountData.account_firstname %> 👋</h2>
+  <p>You're logged in as a <%= accountData.account_type %>.</p>
 
+  <!-- Update account information link (visible for all users) -->
+  <p>
+    <a href="/account/update/<%= accountData.account_id %>" class="btn">Update Account Information</a>
+  </p>
 
-  <p>You're logged in.</p>
-   <!-- Edit account button -->
-  <a href="/account/edit" class="btn">Edit Account Information</a>
+  <!-- Show Inventory Management access only for Employee or Admin -->
+  <% if (accountData.account_type === "Employee" || accountData.account_type === "Admin") { %>
+    <h3>Inventory Management</h3>
+    <p>
+      <a href="/inv" class="btn">Go to Inventory Management</a>
+    </p>
+  <% } %>
 </main>
-
-

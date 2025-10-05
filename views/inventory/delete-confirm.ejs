@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: title }) %>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+  <main class="form-container">
+    <h1><%= title %></h1>
+    <p class="warning-text">⚠️ Confirm Deletion — This action <strong>cannot be undone</strong>.</p>
+
+    <!-- Flash Messages -->
+    <% if (typeof flashMessage !== "undefined" && flashMessage) { %>
+      <div class="flash-message notice">
+        <p><%= flashMessage %></p>
+      </div>
+    <% } %>
+
+    <form action="/inv/delete" method="post" class="inventory-form">
+      <!-- Make -->
+      <div class="form-group">
+        <label for="inv_make">Make</label>
+        <input type="text" id="inv_make" name="inv_make" readonly value="<%= inv_make %>">
+      </div>
+
+      <!-- Model -->
+      <div class="form-group">
+        <label for="inv_model">Model</label>
+        <input type="text" id="inv_model" name="inv_model" readonly value="<%= inv_model %>">
+      </div>
+
+      <!-- Year -->
+      <div class="form-group">
+        <label for="inv_year">Year</label>
+        <input type="text" id="inv_year" name="inv_year" readonly value="<%= inv_year %>">
+      </div>
+
+      <!-- Price -->
+      <div class="form-group">
+        <label for="inv_price">Price</label>
+        <input type="text" id="inv_price" name="inv_price" readonly value="$<%= inv_price.toLocaleString() %>">
+      </div>
+
+      <input type="hidden" name="inv_id" value="<%= inv_id %>">
+
+      <div class="form-group">
+        <button type="submit" class="btn-danger">Delete Vehicle</button>
+        <a href="/inv" class="btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </main>
+
+</body>
+</html>

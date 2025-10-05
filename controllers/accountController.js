@@ -155,23 +155,107 @@ const capitalize = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 }
 async function buildAccountManagement(req, res) {
-  let nav = await utilities.getNav()
-  const accountData = res.locals.accountData || {} 
+  try {
+    let nav = await utilities.getNav()
+    const accountData = res.locals.accountData || {}
 
-  console.log("DEBUG -> accountData en buildAccountManagement:", accountData)
+    console.log("DEBUG -> accountData en buildAccountManagement:", accountData)
+
+    res.render("account/management", {
+      title: "Account Management",
+      nav,
+      errors: null,
+      messages: req.flash("notice"),
+      accountData, 
+      account_firstname: capitalize(accountData.account_firstname) || "User"
+    })
+  } catch (error) {
+    console.error("Error rendering account management view:", error)
+    req.flash("notice", "There was a problem loading your account information.")
+    res.redirect("/account/login")
+  }
+}
+
+
+async function buildAccountUpdate(req, res) {
+  const account_id = req.params.account_id
+  const accountData = await accountModel.getAccountById(account_id)
+  const nav = await utilities.getNav()
+
+  res.render("account/update", {
+    title: "Update Account Information",
+    nav,
+    errors: null,
+    account_firstname: accountData.account_firstname,
+    account_lastname: accountData.account_lastname,
+    account_email: accountData.account_email,
+    account_id: accountData.account_id
+  })
+}
+
+/* **********************************
+ *  Handle Account Info Update
+ * ********************************* */
+async function updateAccount(req, res) {
+  const { account_firstname, account_lastname, account_email, account_id } = req.body
+  const updateResult = await accountModel.updateAccount(account_firstname, account_lastname, account_email, account_id)
+
+  if (updateResult) {
+    req.flash("notice", "Account information updated successfully.")
+  } else {
+    req.flash("notice", "Sorry, the update failed.")
+  }
+
+  const nav = await utilities.getNav()
+  const updatedAccount = await accountModel.getAccountById(account_id)
 
   res.render("account/management", {
     title: "Account Management",
     nav,
     errors: null,
     messages: req.flash("notice"),
-    account_firstname: capitalize(accountData.account_firstname) || "User"
+    account_firstname: updatedAccount.account_firstname,
+    accountData: updatedAccount
   })
+}
+
+/* **********************************
+ *  Handle Password Change
+ * ********************************* */
+async function updatePassword(req, res) {
+  const { account_password, account_id } = req.body
+  const hashedPassword = await bcrypt.hash(account_password, 10)
+  const passwordResult = await accountModel.updatePassword(hashedPassword, account_id)
+
+  const nav = await utilities.getNav()
+
+  if (passwordResult) {
+    req.flash("notice", "Password updated successfully.")
+  } else {
+    req.flash("notice", "Password update failed.")
+  }
+
+  const updatedAccount = await accountModel.getAccountById(account_id)
+
+  res.render("account/management", {
+    title: "Account Management",
+    nav,
+    messages: req.flash("notice"),
+    account_firstname: updatedAccount.account_firstname,
+    accountData: updatedAccount
+  })
+}
+/* **********************************
+ * Logout
+ * ********************************* */
+function logout(req, res) {
+  res.clearCookie("jwt")
+  req.flash("notice", "You have been logged out.")
+  res.redirect("/")
 }
 
 
 
-
-module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildAccountManagement }
+module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildAccountManagement, buildAccountUpdate, updateAccount, updatePassword, logout }
 
 

@@ -146,28 +146,33 @@ function handleErrors(fn) {
 }
 
 /* ****************************************
-* Middleware to check token validity
+*  Middleware to check token validity
 **************************************** */
 Util.checkJWTToken = (req, res, next) => {
-  if (req.cookies.jwt) {
-    jwt.verify(
-      req.cookies.jwt,
-      process.env.ACCESS_TOKEN_SECRET,
-      function (err, accountData) {
-        if (err) {
-          req.flash("notice", "Please log in")
-          res.clearCookie("jwt")
-          return res.redirect("/account/login")
-        }
-        res.locals.accountData = accountData
-        res.locals.loggedin = 1
-        next()
-      }
-    )
-  } else {
-    next()
+  const token = req.cookies && req.cookies.jwt
+  if (!token) {
+    // No token: dejar los valores por defecto (no logueado)
+    res.locals.loggedin = false
+    res.locals.accountData = null
+    return next()
   }
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, accountData) => {
+    if (err) {
+      // Token inválido o expirado: limpiar cookie y no redirigir aquí
+      console.log("JWT verify failed:", err.message || err)
+      res.clearCookie("jwt")
+      res.locals.loggedin = false
+      res.locals.accountData = null
+      return next()
+    }
+    // Token OK -> guardar datos de cuenta en res.locals
+    res.locals.accountData = accountData
+    res.locals.loggedin = true
+    next()
+  })
 }
+
 
 /* ****************************************
  *  Check Login (Authorization Middleware)

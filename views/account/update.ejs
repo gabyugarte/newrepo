@@ -1,0 +1,78 @@
+
+<main class="account-update">
+  <h1><%= title %></h1>
+
+  <!-- Flash Messages -->
+  <% if (messages && messages.length > 0) { %>
+    <div class="flash-message">
+      <% messages.forEach(function(msg) { %>
+        <p><%- msg %></p>
+      <% }); %>
+    </div>
+  <% } %>
+
+  <% if (errors && errors.length > 0) { %>
+    <ul class="validation-errors">
+      <% errors.forEach(error => { %>
+        <li><%= error.msg %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+
+  <!-- Account Update Form -->
+  <section>
+    <h2>Account Update</h2>
+    <form action="/account/update-info" method="post">
+      <label for="account_firstname">First Name:</label>
+      <input
+        type="text"
+        id="account_firstname"
+        name="account_firstname"
+        required
+        value="<%= typeof account_firstname != 'undefined' ? account_firstname : accountData.account_firstname %>"
+      >
+
+      <label for="account_lastname">Last Name:</label>
+      <input
+        type="text"
+        id="account_lastname"
+        name="account_lastname"
+        required
+        value="<%= typeof account_lastname != 'undefined' ? account_lastname : accountData.account_lastname %>"
+      >
+
+      <label for="account_email">Email:</label>
+      <input
+        type="email"
+        id="account_email"
+        name="account_email"
+        required
+        value="<%= typeof account_email != 'undefined' ? account_email : accountData.account_email %>"
+      >
+
+      <input type="hidden" name="account_id" value="<%= accountData.account_id %>">
+      <button type="submit" class="btn-primary">Update Account</button>
+    </form>
+  </section>
+
+  <!-- Password Change Form -->
+  <section>
+    <h2>Change Password</h2>
+    <p>Your new password must be at least 12 characters long and include at least one number, one capital letter, and one special character.</p>
+
+    <form action="/account/update-password" method="post">
+      <label for="account_password">New Password:</label>
+      <input
+        type="password"
+        id="account_password"
+        name="account_password"
+        required
+      >
+      <input type="hidden" name="account_id" value="<%= accountData.account_id %>">
+      <button type="submit" class="btn-secondary">Change Password</button>
+    </form>
+  </section>
+
+</main>
+
+
