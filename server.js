@@ -112,5 +112,13 @@ const port = process.env.PORT || 5500
 const host = process.env.HOST || "localhost"
 
 app.listen(port, () => {
-  console.log(`✅ App listening on http://${host}:${port}`)
+  console.log(` App listening on http://${host}:${port}`)
+})
+
+// Middleware global para pasar la sesión a las vistas
+app.use((req, res, next) => {
+  // Si hay sesión activa, pasamos los datos del usuario a las vistas
+  res.locals.loggedin = req.session.loggedin || false
+  res.locals.accountData = req.session.accountData || null
+  next()
 })

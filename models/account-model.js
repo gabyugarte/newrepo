@@ -105,24 +105,25 @@ async function updatePassword(hashedPassword, account_id) {
   }
 }
 
-/* ******************************
- *  Update profile image filename
- * **************************** */
-async function updateProfileImage(filename, account_id) {
+/* **********************************
+ *  Update profile image
+ * ********************************* */
+async function updateProfileImage(account_id, filename) {
   try {
     const sql = `
       UPDATE account
-      SET profile_image = $1
+      SET account_profile_image = $1
       WHERE account_id = $2
       RETURNING *;
     `
-    const result = await pool.query(sql, [filename, account_id])
-    return result.rows[0]
+    const data = await pool.query(sql, [filename, account_id])
+    return data.rows[0]
   } catch (error) {
     console.error("updateProfileImage error:", error)
     return null
   }
 }
+
 
 
 

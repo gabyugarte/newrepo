@@ -303,7 +303,7 @@ async function uploadProfileImage(req, res) {
     const result = await accountModel.updateProfileImage(account_id, filename)
 
     if (result) {
-      // ✅ Guarda en la sesión con el mismo nombre que usa tu vista
+    
       req.session.accountData.account_profile_image = filename
 
       req.flash("notice", "Profile image updated successfully!")
