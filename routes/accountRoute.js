@@ -125,7 +125,6 @@ router.post(
   utilities.handleErrors(accountController.updatePassword)
 )
 
-// Logout duplicado (mantén solo uno, ya lo tienes arriba)
-/// router.get("/logout", utilities.handleErrors(accountController.logout))
+
 
 module.exports = router

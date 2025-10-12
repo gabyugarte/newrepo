@@ -107,35 +107,38 @@ async function accountLogin(req, res) {
       return
     }
 
-    // 🔑 Comparar contraseñas
-    const match = await bcrypt.compare(account_password, accountData.account_password)
-    if (!match) {
-      req.flash("notice", "Please check your credentials and try again.")
-      return res.status(400).render("account/login", {
-        title: "Login",
-        nav,
-        errors: null,
-        account_email,
-      })
-    }
+//  Comparar contraseñas
+const match = await bcrypt.compare(account_password, accountData.account_password)
+if (!match) {
+  req.flash("notice", "Please check your credentials and try again.")
+  return res.status(400).render("account/login", {
+    title: "Login",
+    nav,
+    errors: null,
+    account_email,
+  })
+}
 
-    delete accountData.account_password
+// Borrar contraseña antes de guardar en sesión
+delete accountData.account_password
 
- 
-    const accessToken = jwt.sign(
-      accountData,
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "1h" }   // OJO: no milisegundos
-    )
+//  Crear token JWT (puedes mantenerlo)
+const accessToken = jwt.sign(accountData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" })
 
-    // Guardar cookie
-    if (process.env.NODE_ENV === "development") {
-      res.cookie("jwt", accessToken, { httpOnly: true, maxAge: 3600 * 1000 })
-    } else {
-      res.cookie("jwt", accessToken, { httpOnly: true, secure: true, maxAge: 3600 * 1000 })
-    }
+//  Guardar cookie y sesión
+if (process.env.NODE_ENV === "development") {
+  res.cookie("jwt", accessToken, { httpOnly: true, maxAge: 3600 * 1000 })
+} else {
+  res.cookie("jwt", accessToken, { httpOnly: true, secure: true, maxAge: 3600 * 1000 })
+}
 
-    return res.redirect("/account/")
+//  Guardar sesión
+req.session.loggedin = true
+req.session.accountData = accountData
+req.session.save(() => {
+  return res.redirect("/account/")
+})
+
   } catch (error) {
     console.error("❌ ERROR EN LOGIN:", error)
     req.flash("notice", "Sorry, login failed.")
@@ -254,18 +257,38 @@ async function updatePassword(req, res) {
  * Logout
  * ********************************* */
 function logout(req, res) {
-  res.clearCookie("jwt")
-  req.flash("notice", "You have been logged out.")
-  res.redirect("/")
+  try {
+    // Borra la cookie JWT
+    res.clearCookie("jwt")
+
+    // Destruye la sesión de Express
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Error destroying session:", err)
+        req.flash("notice", "Error logging out, please try again.")
+        return res.redirect("/account/")
+      }
+
+      // Limpia variables locales para evitar que se sigan mostrando
+      res.locals.loggedin = false
+      res.locals.accountData = null
+
+      // Mensaje y redirección
+      req.flash("notice", "You have been logged out.")
+      res.redirect("/")
+    })
+  } catch (error) {
+    console.error("Logout failed:", error)
+    req.flash("notice", "Something went wrong while logging out.")
+    res.redirect("/")
+  }
 }
+
+
 
 /* **********************************
  *  Upload profile image
  * ********************************* */
-async function uploadProfileImage(req, res) {
-  const accountModel = require("../models/account-model")
-const path = require("path")
-
 async function uploadProfileImage(req, res) {
   try {
     const account_id = res.locals.accountData.account_id
@@ -276,12 +299,12 @@ async function uploadProfileImage(req, res) {
       return res.redirect("/account")
     }
 
-    // Actualiza el nombre de archivo en la BD
+    // Actualiza el nombre del archivo en la base de datos
     const result = await accountModel.updateProfileImage(account_id, filename)
 
     if (result) {
-
-      req.session.accountData.profile_image = filename
+      // ✅ Guarda en la sesión con el mismo nombre que usa tu vista
+      req.session.accountData.account_profile_image = filename
 
       req.flash("notice", "Profile image updated successfully!")
     } else {
@@ -294,7 +317,6 @@ async function uploadProfileImage(req, res) {
     req.flash("notice", "Something went wrong. Please try again.")
     res.redirect("/account")
   }
-}
 }
 
 

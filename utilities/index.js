@@ -178,8 +178,7 @@ Util.checkJWTToken = (req, res, next) => {
  *  Check Login (Authorization Middleware)
  * ************************************ */
 Util.checkLogin = (req, res, next) => {
-  // Si el usuario está en sesión, guardamos sus datos en res.locals
-  if (req.session && req.session.accountData) {
+  if (req.session.loggedin) {
     res.locals.loggedin = true
     res.locals.accountData = req.session.accountData
     next()
@@ -188,6 +187,7 @@ Util.checkLogin = (req, res, next) => {
     return res.redirect("/account/login")
   }
 }
+
 
 
 

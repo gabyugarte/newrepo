@@ -6,11 +6,12 @@
   <div id="tools">
     <% if (loggedin && accountData) { %>
       <div class="user-info" style="display: flex; align-items: center; gap: 8px;">
-        <% 
-          const profileImg = accountData.profile_image 
-            ? `/images/profiles/${accountData.profile_image}` 
-            : '/images/profiles/default.png'
-        %>
+     <% 
+  const profileImg = accountData.account_profile_image
+    ? `/images/profiles/${accountData.account_profile_image}` 
+    : '/images/profiles/default.png'
+%>
+
         <img 
           src="<%= profileImg %>" 
           alt="Profile picture" 

@@ -1,22 +1,23 @@
 <main class="form-page">
   <h1><%= title %></h1>
 
-  <!-- Flash messages -->
-  <% if (messages && messages.notice) { %>
-    <div class="flash-message">
-      <% messages.notice.forEach(msg => { %>
-        <p><%= msg %></p>
+<!-- Flash messages -->
+<% if (messages && Object.keys(messages).length > 0) { %>
+  <div class="flash-message">
+    <% Object.keys(messages).forEach(type => { %>
+      <% 
+        const msgArray = Array.isArray(messages[type]) 
+          ? messages[type] 
+          : [messages[type]] 
+      %>
+      <% msgArray.forEach(msg => { %>
+        <p class="<%= type %>"><%= msg %></p>
       <% }) %>
-    </div>
-  <% } %>
+    <% }) %>
+  </div>
+<% } %>
 
-  <% if (typeof errors !== 'undefined' && errors) { %>
-    <ul class="notice">
-      <% errors.array().forEach(error => { %>
-        <li><%= error.msg %></li>
-      <% }) %>
-    </ul>
-  <% } %>
+
 
 
 

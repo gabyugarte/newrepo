@@ -1,6 +1,5 @@
 /* ******************************************
- * This server.js file is the primary file of the 
- * application. It is used to control the project.
+ * Main server.js file - controls the app
  *******************************************/
 
 /* ***********************
@@ -10,20 +9,16 @@ const express = require("express")
 const expressLayouts = require("express-ejs-layouts")
 const env = require("dotenv").config()
 const app = express()
-const static = require("./routes/static")
+const path = require("path")
+const cookieParser = require("cookie-parser")
+const flash = require("connect-flash")
+const session = require("express-session")
+const pool = require("./database/")
 const baseController = require("./controllers/baseController")
 const inventoryRoute = require("./routes/inventoryRoute")
-const utilities = require("./utilities/")
-const session = require("express-session")
-const pool = require('./database/')
 const accountRoute = require("./routes/accountRoute")
-const flash = require("connect-flash")
-const cookieParser = require("cookie-parser")
-
-
-
-
-
+const staticRoute = require("./routes/static")
+const utilities = require("./utilities/")
 
 /* ***********************
  * View Engine and Templates
@@ -32,53 +27,53 @@ app.set("view engine", "ejs")
 app.use(expressLayouts)
 app.set("layout", "./layouts/layout")
 
-
 /* ***********************
  * Middleware
  *************************/
-app.use(express.static("public"))
+app.use(express.static(path.join(__dirname, "public")))
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
-app.use(session({
-  store: new (require('connect-pg-simple')(session))({
-    createTableIfMissing: true,
-    pool,
-  }),
-  secret: process.env.SESSION_SECRET,
-  resave: true,
-  saveUninitialized: true,
-  name: 'sessionId',
-}))
+// ✅ Session setup (using connect-pg-simple)
+app.use(
+  session({
+    store: new (require("connect-pg-simple")(session))({
+      createTableIfMissing: true,
+      pool,
+    }),
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    name: "sessionId",
+    cookie: {
+      maxAge: 1000 * 60 * 60, // 1 hour
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+    },
+  })
+)
 
-
-// Express Messages Middleware
-// app.use(require('connect-flash')())
-// app.use(function(req, res, next){
-//   res.locals.messages = require('express-messages')(req, res)
-//   next()
-// })
-
-// Flash messages middleware (EJS compatible)
+// ✅ Flash messages
 app.use(flash())
 
+// ✅ Cookie parser
+app.use(cookieParser())
+
+// ✅ Custom locals middleware (for EJS access)
 app.use((req, res, next) => {
   res.locals.messages = req.flash()
-  res.locals.loggedin = req.session.loggedin
-  res.locals.accountData = req.session.accountData
+  res.locals.loggedin = req.session.loggedin || false
+  res.locals.accountData = req.session.accountData || null
   next()
 })
 
-
-app.use(cookieParser())
+// ✅ JWT middleware (if using tokens)
 app.use(utilities.checkJWTToken)
-
-
 
 /* ***********************
  * Routes
  *************************/
-app.use(static)
+app.use(staticRoute)
 app.get("/", baseController.buildHome)
 app.use("/inv", inventoryRoute)
 app.use("/account", accountRoute)
@@ -86,7 +81,7 @@ app.use("/account", accountRoute)
 /* ***********************
  * 404 Error Handler
  *************************/
-app.use(async (req, res, next) => {
+app.use(async (req, res) => {
   let nav = await utilities.getNav()
   res.status(404).render("errors/error", {
     title: "404 - Page Not Found",
@@ -111,18 +106,11 @@ app.use(async (err, req, res, next) => {
 })
 
 /* ***********************
- * Local Server Information
- *************************/
-const port = process.env.PORT
-const host = process.env.HOST
-
-/* ***********************
  * Start Server
  *************************/
+const port = process.env.PORT || 5500
+const host = process.env.HOST || "localhost"
+
 app.listen(port, () => {
-  console.log(`app listening on ${host}:${port}`)
+  console.log(`✅ App listening on http://${host}:${port}`)
 })
-
-
-const invRoute = require("./routes/inventoryRoute")
-app.use("/inv", invRoute)
