@@ -5,8 +5,24 @@
 
   <div id="tools">
     <% if (loggedin && accountData) { %>
-      <a href="/account/"><%= 'Welcome ' + (accountData.account_firstname ? (accountData.account_firstname.charAt(0).toUpperCase() + accountData.account_firstname.slice(1)) : 'User') %></a>
-      <a href="/account/logout" title="Click to log out">Logout</a>
+      <div class="user-info" style="display: flex; align-items: center; gap: 8px;">
+        <% 
+          const profileImg = accountData.profile_image 
+            ? `/images/profiles/${accountData.profile_image}` 
+            : '/images/profiles/default.png'
+        %>
+        <img 
+          src="<%= profileImg %>" 
+          alt="Profile picture" 
+          style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;"
+        >
+        <a href="/account/">
+          Welcome <%= accountData.account_firstname 
+            ? accountData.account_firstname.charAt(0).toUpperCase() + accountData.account_firstname.slice(1)
+            : 'User' %>
+        </a>
+        <a href="/account/logout" title="Click to log out">Logout</a>
+      </div>
     <% } else { %>
       <a href="/account/login" title="Click to log in">My Account</a>
     <% } %>

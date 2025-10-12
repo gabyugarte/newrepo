@@ -304,6 +304,23 @@ body .page-wrap > nav ul.main-nav a:hover {
   font-weight: bold;
 }
 
+#tools .user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  text-decoration: none;
+  color: inherit;
+}
+
+#tools .profile-thumb {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #ccc;
+}
+
+
 @media (max-width: 600px) {
   .main-nav a {
     padding: 6px 8px;

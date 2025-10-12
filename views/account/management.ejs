@@ -27,6 +27,20 @@
   <p>
     <a href="/account/update/<%= accountData.account_id %>" class="btn">Update Account Information</a>
   </p>
+  <h2>Profile Picture</h2>
+
+<% if (accountData.account_profile_image) { %>
+  <img src="/images/profiles/<%= accountData.account_profile_image %>" alt="Profile Image" width="150" height="150">
+<% } else { %>
+  <p>No profile image uploaded.</p>
+<% } %>
+
+<form action="/account/upload-profile" method="POST" enctype="multipart/form-data">
+  <label for="profileImage">Upload new profile picture:</label>
+  <input type="file" name="profileImage" id="profileImage" accept="image/*" required>
+  <button type="submit">Upload</button>
+</form>
+
 
   <!-- Show Inventory Management access only for Employee or Admin -->
   <% if (accountData.account_type === "Employee" || accountData.account_type === "Admin") { %>

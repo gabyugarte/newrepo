@@ -4,7 +4,38 @@ const router = express.Router()
 const utilities = require("../utilities/")
 const accountController = require("../controllers/accountController")
 const regValidate = require("../utilities/account-validation")
-const accountValidate = require("../utilities/account-validation") 
+const accountValidate = require("../utilities/account-validation")
+
+// ✅ Mover multer y configuración ARRIBA antes de usarlo
+const multer = require("multer")
+const path = require("path")
+
+// Configuración del almacenamiento
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/images/profiles")
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + path.extname(file.originalname)
+    cb(null, file.fieldname + "-" + uniqueSuffix)
+  },
+})
+
+// Filtro de tipos permitidos
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = /jpeg|jpg|png|gif/
+  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase())
+  const mimetype = allowedTypes.test(file.mimetype)
+
+  if (mimetype && extname) {
+    return cb(null, true)
+  } else {
+    cb("Error: Images Only!")
+  }
+}
+
+// Inicializa multer
+const upload = multer({ storage, fileFilter })
 
 /* ***************************
  *  GET Login view
@@ -17,6 +48,16 @@ router.post(
   regValidate.loginRules(),
   regValidate.checkLoginData,
   utilities.handleErrors(accountController.accountLogin)
+)
+
+/* ***************************
+ *  Profile picture upload
+ * ************************** */
+router.post(
+  "/upload-profile",
+  utilities.checkLogin,
+  upload.single("profileImage"), // ✅ Ya definida correctamente arriba
+  accountController.uploadProfileImage
 )
 
 /* ***************************
@@ -43,7 +84,6 @@ router.get(
   utilities.checkLogin,
   utilities.handleErrors(accountController.buildAccountManagement)
 )
-
 
 // Deliver edit account view
 router.get(
@@ -85,7 +125,7 @@ router.post(
   utilities.handleErrors(accountController.updatePassword)
 )
 
-router.get("/logout", utilities.handleErrors(accountController.logout))
-
+// Logout duplicado (mantén solo uno, ya lo tienes arriba)
+/// router.get("/logout", utilities.handleErrors(accountController.logout))
 
 module.exports = router

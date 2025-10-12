@@ -61,10 +61,14 @@ app.use(session({
 
 // Flash messages middleware (EJS compatible)
 app.use(flash())
-app.use(function (req, res, next) {
+
+app.use((req, res, next) => {
   res.locals.messages = req.flash()
+  res.locals.loggedin = req.session.loggedin
+  res.locals.accountData = req.session.accountData
   next()
 })
+
 
 app.use(cookieParser())
 app.use(utilities.checkJWTToken)

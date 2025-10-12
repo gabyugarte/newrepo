@@ -1,17 +1,23 @@
-
 <main class="form-page">
   <h1><%= title %></h1>
 
-  <!-- Flash message (si existe) -->
-<% if (messages && Object.keys(messages).length > 0) { %>
-  <div class="flash-message">
-    <% Object.keys(messages).forEach(type => { %>
-      <% messages[type].forEach(msg => { %>
+  <!-- Flash messages -->
+  <% if (messages && messages.notice) { %>
+    <div class="flash-message">
+      <% messages.notice.forEach(msg => { %>
         <p><%= msg %></p>
       <% }) %>
-    <% }) %>
-  </div>
-<% } %>
+    </div>
+  <% } %>
+
+  <% if (typeof errors !== 'undefined' && errors) { %>
+    <ul class="notice">
+      <% errors.array().forEach(error => { %>
+        <li><%= error.msg %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+
 
 
   <!-- Login Form -->

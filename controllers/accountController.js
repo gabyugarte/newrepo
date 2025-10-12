@@ -7,18 +7,22 @@ require("dotenv").config()
 
 
 
-/* ****************************************
-*  Deliver login view
-* *************************************** */
+/* ***************************
+ *  Build login view
+ * ************************** */
 async function buildLogin(req, res, next) {
-  let nav = await utilities.getNav()
+  const nav = await utilities.getNav()
+
   res.render("account/login", {
     title: "Login",
     nav,
-    messages: req.flash("notice"),
-    errors: null
+    messages: req.flash(), 
+    errors: null,                 
+    loggedin: req.session.loggedin || false,  
+    accountData: req.session.accountData || null 
   })
 }
+
 
 /* ****************************************
 *  Deliver registration view
@@ -100,6 +104,7 @@ async function accountLogin(req, res) {
         errors: null,
         account_email,
       })
+      return
     }
 
     // 🔑 Comparar contraseñas
@@ -254,8 +259,45 @@ function logout(req, res) {
   res.redirect("/")
 }
 
+/* **********************************
+ *  Upload profile image
+ * ********************************* */
+async function uploadProfileImage(req, res) {
+  const accountModel = require("../models/account-model")
+const path = require("path")
+
+async function uploadProfileImage(req, res) {
+  try {
+    const account_id = res.locals.accountData.account_id
+    const filename = req.file ? req.file.filename : null
+
+    if (!filename) {
+      req.flash("notice", "Please select an image to upload.")
+      return res.redirect("/account")
+    }
+
+    // Actualiza el nombre de archivo en la BD
+    const result = await accountModel.updateProfileImage(account_id, filename)
+
+    if (result) {
+
+      req.session.accountData.profile_image = filename
+
+      req.flash("notice", "Profile image updated successfully!")
+    } else {
+      req.flash("notice", "There was an error updating your profile image.")
+    }
+
+    res.redirect("/account")
+  } catch (error) {
+    console.error("Error uploading profile image:", error)
+    req.flash("notice", "Something went wrong. Please try again.")
+    res.redirect("/account")
+  }
+}
+}
 
 
-module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildAccountManagement, buildAccountUpdate, updateAccount, updatePassword, logout }
+module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildAccountManagement, buildAccountUpdate, updateAccount, updatePassword, logout, uploadProfileImage}
 
 
